@@ -37,5 +37,19 @@ contract EventContract{
         require(events[id].date!=0,"event does not exist");
         //date of event should be greater than the timestamp of buing ticket...else the event has already occured...
         require(events[id].date>block.timestamp,"event has already occured");
+
+        Event storage _event=events[id];
+        require(msg.value==(_event.price*quantity),"ether is not enough");
+        require(_event.ticketRemin>=quantity,"not enough tickets");
+        _event.ticketRemin-=quantity;
+        tickets[msg.sender][id]+=quantity;
+
+   }
+    function transferTicket(uint eventId,uint quantity,address trans) public{
+       require(events[eventId].date!=0,"event does not exist");
+       require(events[eventId].date>block.timestamp,"event has already occured");
+       require(tickets[msg.sender][eventId]>=quantity,"you do not have enough tickets");
+       tickets[msg.sender][eventId]-=quantity;
+       tickets[trans][eventId]+=quantity;
    }
 }
